@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { 
   Phone, 
   PhoneOff, 
@@ -39,10 +40,10 @@ interface CallSummary {
 }
 
 export default function CustomerServiceApp() {
-  const [isTranscriptCollapsed, setIsTranscriptCollapsed] = useState(false);
   const [inputMessage, setInputMessage] = useState("");
   const [showCallSummary, setShowCallSummary] = useState(false);
   const [callDuration, setCallDuration] = useState("2:35");
+  const [transcriptOpen, setTranscriptOpen] = useState(true);
 
   const transcript: TranscriptMessage[] = [
     {
@@ -124,9 +125,9 @@ export default function CustomerServiceApp() {
         </div>
       </header>
 
-      <div className="flex flex-1">
+      <div className="flex flex-1 flex-col">
         {/* Main Content */}
-        <main className={`flex-1 flex flex-col transition-all duration-300 ${isTranscriptCollapsed ? 'mr-0' : 'mr-96'}`}>
+        <main className="flex-1 flex flex-col">
           {/* Customer Info Bar */}
           <div className="bg-cs-customer-info text-cs-customer-info-foreground px-6 py-4 flex items-center justify-between">
             <div className="flex items-center gap-6">
@@ -144,15 +145,6 @@ export default function CustomerServiceApp() {
             </div>
             <div className="flex items-center gap-4 text-sm">
               <span className="opacity-75">Duration: {callDuration}</span>
-              <Button 
-                variant="ghost" 
-                size="sm"
-                onClick={() => setIsTranscriptCollapsed(!isTranscriptCollapsed)}
-                className="text-cs-customer-info-foreground hover:bg-cs-customer-info/80"
-              >
-                {isTranscriptCollapsed ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                Live Call Transcript
-              </Button>
             </div>
           </div>
 
@@ -225,42 +217,52 @@ export default function CustomerServiceApp() {
           </div>
         </main>
 
-        {/* Transcript Sidebar */}
-        <aside className={`fixed right-0 top-0 h-full bg-cs-transcript border-l transition-all duration-300 ${
-          isTranscriptCollapsed ? 'w-0 overflow-hidden' : 'w-96'
-        }`}>
-          <div className="p-4 border-b bg-cs-transcript">
-            <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-cs-transcript-foreground">Live Call Transcript</h3>
-              <div className="flex items-center gap-2 text-sm text-cs-transcript-foreground/70">
-                <Clock className="h-4 w-4" />
-                Duration: {callDuration}
-              </div>
-            </div>
-            <div className="flex items-center gap-2 mt-2">
-              <div className="w-2 h-2 bg-cs-active rounded-full animate-pulse"></div>
-              <span className="text-xs text-cs-active">Live transcription active...</span>
-            </div>
-          </div>
-          
-          <ScrollArea className="h-[calc(100vh-120px)]">
-            <div className="p-4 space-y-4">
-              {transcript.map((msg, index) => (
-                <div key={index} className="space-y-1">
+        {/* Transcript Accordion */}
+        <div className="border-t bg-cs-transcript">
+          <Accordion 
+            type="single" 
+            collapsible 
+            value={transcriptOpen ? "transcript" : ""}
+            onValueChange={(value) => setTranscriptOpen(value === "transcript")}
+          >
+            <AccordionItem value="transcript" className="border-0">
+              <AccordionTrigger className="px-6 py-4 bg-cs-transcript text-cs-transcript-foreground hover:no-underline">
+                <div className="flex items-center justify-between w-full">
                   <div className="flex items-center gap-2">
-                    <span className={`font-medium text-sm ${
-                      msg.speaker === 'Customer' ? 'text-cs-customer-text' : 'text-cs-rep-text'
-                    }`}>
-                      {msg.speaker}
-                    </span>
-                    <span className="text-xs text-cs-transcript-foreground/50">{msg.timestamp}</span>
+                    <h3 className="font-semibold">Live Call Transcript</h3>
+                    <div className="flex items-center gap-2 ml-4">
+                      <div className="w-2 h-2 bg-cs-active rounded-full animate-pulse"></div>
+                      <span className="text-xs text-cs-active">Live transcription active...</span>
+                    </div>
                   </div>
-                  <p className="text-sm text-cs-transcript-foreground leading-relaxed">{msg.message}</p>
+                  <div className="flex items-center gap-2 text-sm text-cs-transcript-foreground/70">
+                    <Clock className="h-4 w-4" />
+                    Duration: {callDuration}
+                  </div>
                 </div>
-              ))}
-            </div>
-          </ScrollArea>
-        </aside>
+              </AccordionTrigger>
+              <AccordionContent className="px-0 pb-0">
+                <ScrollArea className="h-64 px-6 pb-4">
+                  <div className="space-y-4">
+                    {transcript.map((msg, index) => (
+                      <div key={index} className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className={`font-medium text-sm ${
+                            msg.speaker === 'Customer' ? 'text-cs-customer-text' : 'text-cs-rep-text'
+                          }`}>
+                            {msg.speaker}
+                          </span>
+                          <span className="text-xs text-cs-transcript-foreground/50">{msg.timestamp}</span>
+                        </div>
+                        <p className="text-sm text-cs-transcript-foreground leading-relaxed">{msg.message}</p>
+                      </div>
+                    ))}
+                  </div>
+                </ScrollArea>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
       </div>
 
       {/* Call Summary Modal */}
