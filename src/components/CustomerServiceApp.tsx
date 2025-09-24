@@ -107,7 +107,7 @@ export default function CustomerServiceApp() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">{/* Customer Service App */}
       {/* Header */}
       <header className="bg-cs-header text-cs-header-foreground px-6 py-4 flex items-center justify-between shadow-medium">
         <div className="flex items-center gap-4">
