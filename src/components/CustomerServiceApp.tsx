@@ -8,6 +8,10 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
 import { 
   Phone, 
   PhoneOff, 
@@ -20,7 +24,8 @@ import {
   AlertTriangle,
   FileText,
   Users,
-  TrendingUp
+  TrendingUp,
+  ExternalLink
 } from "lucide-react";
 
 interface TranscriptMessage {
@@ -56,11 +61,24 @@ interface CallSummary {
 }
 
 export default function CustomerServiceApp() {
+  const { toast } = useToast();
   const [inputMessage, setInputMessage] = useState("");
   const [showCallSummary, setShowCallSummary] = useState(false);
   const [callDuration, setCallDuration] = useState("2:35");
   const [transcriptOpen, setTranscriptOpen] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  
+  // Modal states
+  const [showCasesModal, setShowCasesModal] = useState(false);
+  const [showActivitiesModal, setShowActivitiesModal] = useState(false);
+  const [showCodeRedModal, setShowCodeRedModal] = useState(false);
+  const [showNotesModal, setShowNotesModal] = useState(false);
+  
+  // Form states
+  const [caseForm, setCaseForm] = useState({ type: "", details: "", assignTo: "" });
+  const [activityForm, setActivityForm] = useState({ type: "", details: "", assignTo: "" });
+  const [codeRedForm, setCodeRedForm] = useState({ details: "", priority: "" });
+  const [notesForm, setNotesForm] = useState({ subject: "", comments: "", provider: "" });
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     {
       type: "ai",
@@ -137,6 +155,14 @@ export default function CustomerServiceApp() {
       "Update knowledge base with iPhone 14 specific steps"
     ]
   };
+
+  const resourcesSent = [
+    "Link to 24/7 chat support portal",
+    "Bluetooth connectivity troubleshooting agent",
+    "Hearing aid cleaning and maintenance guide",
+    "Device warranty information PDF",
+    "User manual for Horizon 71X hearing aids"
+  ];
 
   const getResponseForQuestion = (question: string): string => {
     switch (question) {
@@ -220,6 +246,51 @@ export default function CustomerServiceApp() {
         timestamp: new Date().toLocaleTimeString()
       }]);
     }, 1000);
+  };
+
+  // Modal handlers
+  const handleCreateCase = () => {
+    toast({
+      title: "Success",
+      description: "Case has been successfully created",
+    });
+    setCaseForm({ type: "", details: "", assignTo: "" });
+    setShowCasesModal(false);
+  };
+
+  const handleCreateActivity = () => {
+    toast({
+      title: "Success", 
+      description: "Customer activity has been successfully created",
+    });
+    setActivityForm({ type: "", details: "", assignTo: "" });
+    setShowActivitiesModal(false);
+  };
+
+  const handleCreateCodeRed = () => {
+    toast({
+      title: "Success",
+      description: "Code Red has been successfully created",
+    });
+    setCodeRedForm({ details: "", priority: "" });
+    setShowCodeRedModal(false);
+  };
+
+  const handleSendNotes = () => {
+    toast({
+      title: "Success",
+      description: "Notes successfully sent to partner provider",
+    });
+    setNotesForm({ subject: "", comments: "", provider: "" });
+    setShowNotesModal(false);
+  };
+
+  const handleFinalizeCall = () => {
+    toast({
+      title: "Call Completed",
+      description: "Summary saved and activities created successfully",
+    });
+    setShowCallSummary(false);
   };
 
   return (
@@ -501,6 +572,18 @@ export default function CustomerServiceApp() {
                   ))}
                 </ul>
               </div>
+
+              <div>
+                <h3 className="font-semibold mb-2 flex items-center gap-2">
+                  <Users className="h-4 w-4" />
+                  Customer Activities Created
+                </h3>
+                <ul className="text-sm space-y-1">
+                  {callSummary.customerActivities.map((activity, index) => (
+                    <li key={index} className="bg-muted p-2 rounded-md">• {activity}</li>
+                  ))}
+                </ul>
+              </div>
             </div>
 
             {/* Right Column */}
@@ -512,12 +595,12 @@ export default function CustomerServiceApp() {
 
               <div>
                 <h3 className="font-semibold mb-2 flex items-center gap-2">
-                  <Users className="h-4 w-4" />
-                  Customer Activities Created
+                  <ExternalLink className="h-4 w-4" />
+                  Resources Sent
                 </h3>
                 <ul className="text-sm space-y-1">
-                  {callSummary.customerActivities.map((activity, index) => (
-                    <li key={index} className="bg-muted p-2 rounded-md">• {activity}</li>
+                  {resourcesSent.map((resource, index) => (
+                    <li key={index} className="bg-muted p-2 rounded-md">• {resource}</li>
                   ))}
                 </ul>
               </div>
@@ -539,15 +622,248 @@ export default function CustomerServiceApp() {
           <Separator className="my-6" />
 
           {/* Action Buttons */}
-          <div className="flex justify-end gap-3">
-            <Button variant="outline">Create Additional Cases</Button>
-            <Button variant="outline">Create Additional Customer Activities</Button>
-            <Button className="bg-cs-warning text-cs-warning-foreground hover:bg-cs-warning/90">
-              Create Code Red
+          <div className="flex justify-between">
+            <div className="flex gap-3">
+              <Button variant="outline" onClick={() => setShowCasesModal(true)}>
+                Create Additional Cases
+              </Button>
+              <Button variant="outline" onClick={() => setShowActivitiesModal(true)}>
+                Create Additional Customer Activities
+              </Button>
+              <Button 
+                className="bg-cs-warning text-cs-warning-foreground hover:bg-cs-warning/90"
+                onClick={() => setShowCodeRedModal(true)}
+              >
+                Create Code Red
+              </Button>
+              <Button 
+                className="bg-primary hover:bg-primary-dark"
+                onClick={() => setShowNotesModal(true)}
+              >
+                Send Notes to Partner Provider
+              </Button>
+            </div>
+            <Button 
+              className="bg-cs-active text-cs-active-foreground hover:bg-cs-active/90"
+              onClick={handleFinalizeCall}
+            >
+              Finalize Call
             </Button>
-            <Button className="bg-primary hover:bg-primary-dark">
-              Send Notes to Partner Provider
-            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Create Additional Cases Modal */}
+      <Dialog open={showCasesModal} onOpenChange={setShowCasesModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Create New Case</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            <div>
+              <Label htmlFor="case-type">Case Type</Label>
+              <Select value={caseForm.type} onValueChange={(value) => setCaseForm(prev => ({...prev, type: value}))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select case type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="technical">Technical Issue</SelectItem>
+                  <SelectItem value="billing">Billing Inquiry</SelectItem>
+                  <SelectItem value="return">Product Return</SelectItem>
+                  <SelectItem value="warranty">Warranty Claim</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="case-details">Details</Label>
+              <Textarea 
+                id="case-details"
+                placeholder="Enter case description..."
+                value={caseForm.details}
+                onChange={(e) => setCaseForm(prev => ({...prev, details: e.target.value}))}
+              />
+            </div>
+            <div>
+              <Label htmlFor="case-assign">Assign To</Label>
+              <Select value={caseForm.assignTo} onValueChange={(value) => setCaseForm(prev => ({...prev, assignTo: value}))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select assignee" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="technical">Technical Support</SelectItem>
+                  <SelectItem value="service">Customer Service</SelectItem>
+                  <SelectItem value="billing">Billing Department</SelectItem>
+                  <SelectItem value="warranty">Warranty Team</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex gap-2 pt-4">
+              <Button variant="outline" onClick={() => setShowCasesModal(false)} className="flex-1">
+                Cancel
+              </Button>
+              <Button onClick={handleCreateCase} className="flex-1">
+                Save Case
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Create Additional Customer Activities Modal */}
+      <Dialog open={showActivitiesModal} onOpenChange={setShowActivitiesModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Create Customer Activity</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            <div>
+              <Label htmlFor="activity-type">Activity Type</Label>
+              <Select value={activityForm.type} onValueChange={(value) => setActivityForm(prev => ({...prev, type: value}))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select activity type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="followup">Follow-up Call</SelectItem>
+                  <SelectItem value="email">Email Sent</SelectItem>
+                  <SelectItem value="training">Training Scheduled</SelectItem>
+                  <SelectItem value="replacement">Device Replacement</SelectItem>
+                  <SelectItem value="documentation">Documentation Updated</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="activity-details">Details</Label>
+              <Textarea 
+                id="activity-details"
+                placeholder="Enter activity description..."
+                value={activityForm.details}
+                onChange={(e) => setActivityForm(prev => ({...prev, details: e.target.value}))}
+              />
+            </div>
+            <div>
+              <Label htmlFor="activity-assign">Assign To</Label>
+              <Select value={activityForm.assignTo} onValueChange={(value) => setActivityForm(prev => ({...prev, assignTo: value}))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select assignee" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="account">Account Manager</SelectItem>
+                  <SelectItem value="technical">Technical Support</SelectItem>
+                  <SelectItem value="success">Customer Success</SelectItem>
+                  <SelectItem value="training">Training Team</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex gap-2 pt-4">
+              <Button variant="outline" onClick={() => setShowActivitiesModal(false)} className="flex-1">
+                Cancel
+              </Button>
+              <Button onClick={handleCreateActivity} className="flex-1">
+                Save Activity
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Create Code Red Modal */}
+      <Dialog open={showCodeRedModal} onOpenChange={setShowCodeRedModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Create Code Red</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            <div>
+              <Label htmlFor="codred-type">Type</Label>
+              <Input 
+                id="codred-type"
+                value="Code Red - Urgent Escalation"
+                disabled
+                className="bg-muted"
+              />
+            </div>
+            <div>
+              <Label htmlFor="codred-details">Reason Details</Label>
+              <Textarea 
+                id="codred-details"
+                placeholder="Enter escalation reason..."
+                value={codeRedForm.details}
+                onChange={(e) => setCodeRedForm(prev => ({...prev, details: e.target.value}))}
+              />
+            </div>
+            <div>
+              <Label htmlFor="codred-priority">Priority Level</Label>
+              <Select value={codeRedForm.priority} onValueChange={(value) => setCodeRedForm(prev => ({...prev, priority: value}))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select priority level" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="high">High</SelectItem>
+                  <SelectItem value="critical">Critical</SelectItem>
+                  <SelectItem value="emergency">Emergency</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex gap-2 pt-4">
+              <Button variant="outline" onClick={() => setShowCodeRedModal(false)} className="flex-1">
+                Cancel
+              </Button>
+              <Button onClick={handleCreateCodeRed} className="flex-1 bg-cs-warning text-cs-warning-foreground hover:bg-cs-warning/90">
+                Create Code Red
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Send Notes to Partner Provider Modal */}
+      <Dialog open={showNotesModal} onOpenChange={setShowNotesModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Send Notes to Partner Provider</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            <div>
+              <Label htmlFor="notes-subject">Subject</Label>
+              <Input 
+                id="notes-subject"
+                placeholder="Enter subject..."
+                value={notesForm.subject}
+                onChange={(e) => setNotesForm(prev => ({...prev, subject: e.target.value}))}
+              />
+            </div>
+            <div>
+              <Label htmlFor="notes-comments">Comments</Label>
+              <Textarea 
+                id="notes-comments"
+                placeholder="Enter detailed notes..."
+                value={notesForm.comments}
+                onChange={(e) => setNotesForm(prev => ({...prev, comments: e.target.value}))}
+              />
+            </div>
+            <div>
+              <Label htmlFor="notes-provider">Partner Provider</Label>
+              <Select value={notesForm.provider} onValueChange={(value) => setNotesForm(prev => ({...prev, provider: value}))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select partner provider" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="primary">Primary Care Provider</SelectItem>
+                  <SelectItem value="specialist">Specialist Office</SelectItem>
+                  <SelectItem value="insurance">Insurance Company</SelectItem>
+                  <SelectItem value="manufacturer">Device Manufacturer</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex gap-2 pt-4">
+              <Button variant="outline" onClick={() => setShowNotesModal(false)} className="flex-1">
+                Cancel
+              </Button>
+              <Button onClick={handleSendNotes} className="flex-1">
+                Send Notes
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
