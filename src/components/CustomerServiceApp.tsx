@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { 
   Phone, 
   PhoneOff, 
@@ -34,6 +35,15 @@ interface ChatMessage {
   timestamp: string;
 }
 
+interface RecentCall {
+  id: string;
+  customerName: string;
+  date: string;
+  duration: string;
+  status: "Resolved" | "Follow-up" | "Escalated";
+  issue: string;
+}
+
 interface CallSummary {
   customerName: string;
   rating: number;
@@ -50,6 +60,7 @@ export default function CustomerServiceApp() {
   const [showCallSummary, setShowCallSummary] = useState(false);
   const [callDuration, setCallDuration] = useState("2:35");
   const [transcriptOpen, setTranscriptOpen] = useState(true);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     {
       type: "ai",
@@ -83,6 +94,25 @@ export default function CustomerServiceApp() {
       speaker: "Rep",
       message: "Let me walk you through the process step by step. First, can you go to Settings > Accessibility on your iPhone?",
       timestamp: "10:24:15"
+    }
+  ];
+
+  const recentCalls: RecentCall[] = [
+    {
+      id: "1",
+      customerName: "John Smith",
+      date: "Today, 9:15 AM",
+      duration: "4:23",
+      status: "Resolved",
+      issue: "Bluetooth pairing issues"
+    },
+    {
+      id: "2", 
+      customerName: "Sarah Johnson",
+      date: "Yesterday, 2:30 PM",
+      duration: "6:12",
+      status: "Follow-up",
+      issue: "Warranty replacement request"
     }
   ];
 
@@ -134,10 +164,26 @@ export default function CustomerServiceApp() {
     setShowCallSummary(true);
   };
 
+  const handleRecentCallClick = (call: RecentCall) => {
+    setChatMessages(prev => [...prev, {
+      type: "user" as const,
+      message: `Load context for previous call with ${call.customerName}`,
+      timestamp: new Date().toLocaleTimeString()
+    }]);
+    
+    setTimeout(() => {
+      setChatMessages(prev => [...prev, {
+        type: "ai" as const,
+        message: `Loading context for ${call.customerName}'s previous call on ${call.date}. Issue: ${call.issue}. Duration: ${call.duration}. Status: ${call.status}. I have access to the full call transcript and resolution details.`,
+        timestamp: new Date().toLocaleTimeString()
+      }]);
+    }, 1000);
+  };
+
   return (
-    <div className="min-h-screen bg-background flex flex-col">{/* Customer Service App */}
+    <div className="h-screen bg-background flex flex-col overflow-hidden">{/* Customer Service App */}
       {/* Header */}
-      <header className="bg-cs-header text-cs-header-foreground px-6 py-4 flex items-center justify-between shadow-medium">
+      <header className="bg-cs-header text-cs-header-foreground px-6 py-4 flex items-center justify-between shadow-medium shrink-0">
         <div className="flex items-center gap-4">
           <Phone className="h-6 w-6" />
           <h1 className="text-xl font-semibold">Customer Care Assistant</h1>
@@ -147,17 +193,25 @@ export default function CustomerServiceApp() {
           </Badge>
         </div>
         <div className="flex items-center gap-4">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+            className="text-cs-header-foreground hover:bg-primary-dark"
+          >
+            {sidebarCollapsed ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+          </Button>
           <Button variant="ghost" size="sm" className="text-cs-header-foreground hover:bg-primary-dark">
             <PhoneOff className="h-4 w-4" />
           </Button>
         </div>
       </header>
 
-      <div className="flex flex-1">
+      <div className="flex flex-1 overflow-hidden">
         {/* Left Column - Main Content */}
-        <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col overflow-hidden">
           {/* Customer Info Bar */}
-          <div className="bg-cs-customer-info text-cs-customer-info-foreground px-6 py-4 flex items-center justify-between">
+          <div className="bg-cs-customer-info text-cs-customer-info-foreground px-6 py-4 flex items-center justify-between shrink-0">
             <div className="flex items-center gap-6">
               <div>
                 <h2 className="text-lg font-semibold">Margaret Davis</h2>
@@ -177,19 +231,48 @@ export default function CustomerServiceApp() {
           </div>
 
           {/* Content Area */}
-          <div className="flex-1 p-6 bg-cs-chat-bg">
+          <div className="flex-1 p-6 bg-cs-chat-bg overflow-hidden flex flex-col">
             {/* Recent Calls */}
             <div className="mb-6">
-              <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
-                Recent Calls (2)
-                <ChevronRight className="h-4 w-4" />
-              </h3>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="h-auto p-0 font-normal">
+                    <h3 className="text-sm font-medium flex items-center gap-2">
+                      Recent Calls (2)
+                      <ChevronRight className="h-4 w-4" />
+                    </h3>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-80">
+                  {recentCalls.map((call) => (
+                    <DropdownMenuItem 
+                      key={call.id} 
+                      onClick={() => handleRecentCallClick(call)}
+                      className="p-4 cursor-pointer"
+                    >
+                      <div className="w-full">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="font-medium">{call.customerName}</span>
+                          <Badge variant={call.status === "Resolved" ? "default" : "secondary"} className="text-xs">
+                            {call.status}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground mb-1">{call.issue}</p>
+                        <div className="flex items-center justify-between text-xs text-muted-foreground">
+                          <span>{call.date}</span>
+                          <span>Duration: {call.duration}</span>
+                        </div>
+                      </div>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
 
             {/* AI Chat Messages */}
-            <Card className="mb-6 shadow-soft">
-              <CardContent className="p-0">
-                <div className="p-4 border-b bg-muted/30">
+            <Card className="mb-6 shadow-soft flex-1 flex flex-col overflow-hidden">
+              <CardContent className="p-0 flex-1 flex flex-col overflow-hidden">
+                <div className="p-4 border-b bg-muted/30 shrink-0">
                   <div className="flex items-center gap-2">
                     <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
                       <span className="text-primary-foreground font-semibold text-xs">AI</span>
@@ -197,7 +280,7 @@ export default function CustomerServiceApp() {
                     <h3 className="font-semibold">Customer Assistant</h3>
                   </div>
                 </div>
-                <ScrollArea className="h-64">
+                <ScrollArea className="flex-1">
                   <div className="p-4 space-y-4">
                     {chatMessages.map((msg, index) => (
                       <div key={index} className={`flex gap-3 ${msg.type === 'user' ? 'flex-row-reverse' : ''}`}>
@@ -269,52 +352,54 @@ export default function CustomerServiceApp() {
         </div>
 
         {/* Right Column - Transcript */}
-        <div className="w-96 border-l bg-cs-transcript flex flex-col">
-          <Accordion 
-            type="single" 
-            collapsible 
-            value={transcriptOpen ? "transcript" : ""}
-            onValueChange={(value) => setTranscriptOpen(value === "transcript")}
-            className="flex-1 flex flex-col"
-          >
-            <AccordionItem value="transcript" className="border-0 flex-1 flex flex-col">
-              <AccordionTrigger className="px-6 py-4 bg-cs-transcript text-cs-transcript-foreground hover:no-underline">
-                <div className="flex items-center justify-between w-full">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-semibold">Live Call Transcript</h3>
-                    <div className="flex items-center gap-2 ml-2">
-                      <div className="w-2 h-2 bg-cs-active rounded-full animate-pulse"></div>
-                      <span className="text-xs text-cs-active">Live</span>
+        {!sidebarCollapsed && (
+          <div className="w-96 border-l bg-cs-transcript flex flex-col transition-all duration-300">
+            <Accordion 
+              type="single" 
+              collapsible 
+              value={transcriptOpen ? "transcript" : ""}
+              onValueChange={(value) => setTranscriptOpen(value === "transcript")}
+              className="flex-1 flex flex-col"
+            >
+              <AccordionItem value="transcript" className="border-0 flex-1 flex flex-col">
+                <AccordionTrigger className="px-6 py-4 bg-cs-transcript text-cs-transcript-foreground hover:no-underline">
+                  <div className="flex items-center justify-between w-full">
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-semibold">Live Call Transcript</h3>
+                      <div className="flex items-center gap-2 ml-2">
+                        <div className="w-2 h-2 bg-cs-active rounded-full animate-pulse"></div>
+                        <span className="text-xs text-cs-active">Live</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-cs-transcript-foreground/70">
+                      <Clock className="h-4 w-4" />
+                      {callDuration}
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-cs-transcript-foreground/70">
-                    <Clock className="h-4 w-4" />
-                    {callDuration}
-                  </div>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="px-0 pb-0 flex-1">
-                <ScrollArea className="h-[calc(100vh-200px)] px-6 pb-4">
-                  <div className="space-y-4">
-                    {transcript.map((msg, index) => (
-                      <div key={index} className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <span className={`font-medium text-sm ${
-                            msg.speaker === 'Customer' ? 'text-cs-customer-text' : 'text-cs-rep-text'
-                          }`}>
-                            {msg.speaker}
-                          </span>
-                          <span className="text-xs text-cs-transcript-foreground/50">{msg.timestamp}</span>
+                </AccordionTrigger>
+                <AccordionContent className="px-0 pb-0 flex-1">
+                  <ScrollArea className="h-[calc(100vh-200px)] px-6 pb-4">
+                    <div className="space-y-4">
+                      {transcript.map((msg, index) => (
+                        <div key={index} className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <span className={`font-medium text-sm ${
+                              msg.speaker === 'Customer' ? 'text-cs-customer-text' : 'text-cs-rep-text'
+                            }`}>
+                              {msg.speaker}
+                            </span>
+                            <span className="text-xs text-cs-transcript-foreground/50">{msg.timestamp}</span>
+                          </div>
+                          <p className="text-sm text-cs-transcript-foreground leading-relaxed">{msg.message}</p>
                         </div>
-                        <p className="text-sm text-cs-transcript-foreground leading-relaxed">{msg.message}</p>
-                      </div>
-                    ))}
-                  </div>
-                </ScrollArea>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-        </div>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
+        )}
       </div>
 
       {/* Call Summary Modal */}
