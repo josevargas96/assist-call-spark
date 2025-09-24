@@ -210,23 +210,22 @@ export default function CustomerServiceApp() {
       <div className="flex flex-1 overflow-hidden">
         {/* Left Column - Main Content */}
         <div className="flex-1 flex flex-col overflow-hidden">
-          {/* Customer Info Bar */}
-          <div className="bg-cs-customer-info text-cs-customer-info-foreground px-6 py-4 flex items-center justify-between shrink-0">
-            <div className="flex items-center gap-6">
-              <div>
-                <h2 className="text-lg font-semibold">Margaret Davis</h2>
-                <p className="text-sm opacity-90">TX</p>
+          {/* Customer Info Bar - Optimized */}
+          <div className="bg-cs-customer-info text-cs-customer-info-foreground px-6 py-2 flex items-center justify-between shrink-0">
+            <div className="flex items-center gap-8">
+              <div className="flex items-center gap-3">
+                <h2 className="text-base font-semibold">Margaret Davis</h2>
+                <span className="text-sm opacity-75">TX</span>
               </div>
               <div className="flex items-center gap-2">
-                <Smartphone className="h-4 w-4" />
-                <div>
-                  <p className="text-sm font-medium">iPhone 13</p>
-                  <p className="text-xs opacity-75">Horizon 71X</p>
-                </div>
+                <Smartphone className="h-3.5 w-3.5" />
+                <span className="text-sm font-medium">iPhone 13</span>
+                <span className="text-xs opacity-75">• Horizon 71X</span>
               </div>
-            </div>
-            <div className="flex items-center gap-4 text-sm">
-              <span className="opacity-75">Duration: {callDuration}</span>
+              <div className="flex items-center gap-1 text-sm opacity-75">
+                <Clock className="h-3.5 w-3.5" />
+                <span>{callDuration}</span>
+              </div>
             </div>
           </div>
 
@@ -269,22 +268,22 @@ export default function CustomerServiceApp() {
               </DropdownMenu>
             </div>
 
-            {/* AI Chat Messages */}
-            <Card className="mb-6 shadow-soft flex-1 flex flex-col overflow-hidden">
+            {/* AI Chat Messages - Expanded */}
+            <Card className="mb-4 shadow-soft flex-1 flex flex-col overflow-hidden">
               <CardContent className="p-0 flex-1 flex flex-col overflow-hidden">
-                <div className="p-4 border-b bg-muted/30 shrink-0">
+                <div className="p-3 border-b bg-muted/30 shrink-0">
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                    <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
                       <span className="text-primary-foreground font-semibold text-xs">AI</span>
                     </div>
-                    <h3 className="font-semibold">Customer Assistant</h3>
+                    <h3 className="font-medium text-sm">Customer Assistant</h3>
                   </div>
                 </div>
-                <ScrollArea className="flex-1">
-                  <div className="p-4 space-y-4">
+                <ScrollArea className="flex-1 min-h-0">
+                  <div className="p-3 space-y-3">
                     {chatMessages.map((msg, index) => (
-                      <div key={index} className={`flex gap-3 ${msg.type === 'user' ? 'flex-row-reverse' : ''}`}>
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
+                      <div key={index} className={`flex gap-2 ${msg.type === 'user' ? 'flex-row-reverse' : ''}`}>
+                        <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${
                           msg.type === 'ai' ? 'bg-primary' : 'bg-cs-customer-info'
                         }`}>
                           <span className={`font-semibold text-xs ${
@@ -294,14 +293,14 @@ export default function CustomerServiceApp() {
                           </span>
                         </div>
                         <div className={`flex-1 ${msg.type === 'user' ? 'text-right' : ''}`}>
-                          <div className={`inline-block p-3 rounded-lg max-w-[80%] ${
+                          <div className={`inline-block p-2.5 rounded-lg max-w-[85%] ${
                             msg.type === 'ai' 
                               ? 'bg-muted text-foreground' 
                               : 'bg-primary text-primary-foreground'
                           }`}>
                             <p className="text-sm leading-relaxed">{msg.message}</p>
                           </div>
-                          <p className="text-xs text-muted-foreground mt-1">{msg.timestamp}</p>
+                          <p className="text-xs text-muted-foreground mt-0.5">{msg.timestamp}</p>
                         </div>
                       </div>
                     ))}
@@ -310,40 +309,41 @@ export default function CustomerServiceApp() {
               </CardContent>
             </Card>
 
-            {/* Quick Questions */}
-            <div className="mb-6">
-              <h3 className="text-sm font-medium mb-3">Quick Questions:</h3>
-              <div className="flex flex-wrap gap-2">
+            {/* Quick Questions - Compact */}
+            <div className="mb-3">
+              <h3 className="text-xs font-medium mb-2 text-muted-foreground">Quick Questions:</h3>
+              <div className="flex flex-wrap gap-1.5">
                 {quickQuestions.map((question) => (
-                  <Button key={question} variant="outline" size="sm" className="text-primary">
+                  <Button key={question} variant="outline" size="sm" className="text-primary text-xs h-7 px-2">
                     {question}
                   </Button>
                 ))}
               </div>
             </div>
 
-            {/* Chat Input */}
-            <div className="flex gap-3 mb-6">
+            {/* Chat Input - Compact */}
+            <div className="flex gap-2 mb-3">
               <Input
                 placeholder="Ask about Margaret's profile, history, or device info..."
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                className="flex-1"
+                className="flex-1 h-9"
               />
-              <Button onClick={handleSendMessage} className="bg-primary hover:bg-primary-dark">
-                <Send className="h-4 w-4" />
+              <Button onClick={handleSendMessage} size="sm" className="bg-primary hover:bg-primary-dark h-9 px-3">
+                <Send className="h-3.5 w-3.5" />
               </Button>
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex gap-3">
-              <Button className="bg-cs-warning text-cs-warning-foreground hover:bg-cs-warning/90">
+            {/* Action Buttons - Compact */}
+            <div className="flex gap-2">
+              <Button size="sm" className="bg-cs-warning text-cs-warning-foreground hover:bg-cs-warning/90 h-8 text-xs">
                 Create Code Red
               </Button>
               <Button 
                 onClick={handleCompleteCall}
-                className="bg-cs-danger text-cs-danger-foreground hover:bg-cs-danger/90"
+                size="sm"
+                className="bg-cs-danger text-cs-danger-foreground hover:bg-cs-danger/90 h-8 text-xs"
               >
                 Complete Call
               </Button>
