@@ -17,8 +17,10 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Professional blue theme for customer service */
+    --primary: 220 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    --primary-dark: 220 100% 35%;
 
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
@@ -37,6 +39,28 @@ All colors MUST be HSL.
     --ring: 222.2 84% 4.9%;
 
     --radius: 0.5rem;
+
+    /* Customer service specific colors */
+    --cs-header: 220 100% 50%;
+    --cs-header-foreground: 0 0% 100%;
+    --cs-active: 120 100% 35%;
+    --cs-active-foreground: 0 0% 100%;
+    --cs-customer-info: 220 15% 25%;
+    --cs-customer-info-foreground: 0 0% 100%;
+    --cs-transcript: 0 0% 98%;
+    --cs-transcript-foreground: 222.2 84% 4.9%;
+    --cs-chat-bg: 210 40% 98%;
+    --cs-warning: 25 100% 50%;
+    --cs-warning-foreground: 0 0% 100%;
+    --cs-danger: 0 84% 55%;
+    --cs-danger-foreground: 0 0% 100%;
+    --cs-customer-text: 220 100% 50%;
+    --cs-rep-text: 120 40% 40%;
+
+    /* Shadows and effects */
+    --shadow-soft: 0 2px 8px hsl(220 15% 15% / 0.1);
+    --shadow-medium: 0 4px 16px hsl(220 15% 15% / 0.15);
+    --transition-smooth: all 0.2s ease-in-out;
 
     --sidebar-background: 0 0% 98%;
 
@@ -65,8 +89,9 @@ All colors MUST be HSL.
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 40% 98%;
+    --primary: 220 100% 60%;
     --primary-foreground: 222.2 47.4% 11.2%;
+    --primary-dark: 220 100% 45%;
 
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
@@ -83,6 +108,23 @@ All colors MUST be HSL.
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
+
+    /* Dark mode customer service colors */
+    --cs-header: 220 100% 45%;
+    --cs-header-foreground: 0 0% 100%;
+    --cs-active: 120 100% 40%;
+    --cs-active-foreground: 0 0% 100%;
+    --cs-customer-info: 220 20% 20%;
+    --cs-customer-info-foreground: 0 0% 100%;
+    --cs-transcript: 217.2 32.6% 17.5%;
+    --cs-transcript-foreground: 210 40% 98%;
+    --cs-chat-bg: 217.2 32.6% 15%;
+    --cs-warning: 25 100% 55%;
+    --cs-warning-foreground: 0 0% 100%;
+    --cs-danger: 0 84% 60%;
+    --cs-danger-foreground: 0 0% 100%;
+    --cs-customer-text: 220 100% 60%;
+    --cs-rep-text: 120 50% 50%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;

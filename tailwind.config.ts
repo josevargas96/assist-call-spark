@@ -22,6 +22,7 @@ export default {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+          dark: "hsl(var(--primary-dark))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -47,6 +48,23 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        cs: {
+          header: "hsl(var(--cs-header))",
+          "header-foreground": "hsl(var(--cs-header-foreground))",
+          active: "hsl(var(--cs-active))",
+          "active-foreground": "hsl(var(--cs-active-foreground))",
+          "customer-info": "hsl(var(--cs-customer-info))",
+          "customer-info-foreground": "hsl(var(--cs-customer-info-foreground))",
+          transcript: "hsl(var(--cs-transcript))",
+          "transcript-foreground": "hsl(var(--cs-transcript-foreground))",
+          "chat-bg": "hsl(var(--cs-chat-bg))",
+          warning: "hsl(var(--cs-warning))",
+          "warning-foreground": "hsl(var(--cs-warning-foreground))",
+          danger: "hsl(var(--cs-danger))",
+          "danger-foreground": "hsl(var(--cs-danger-foreground))",
+          "customer-text": "hsl(var(--cs-customer-text))",
+          "rep-text": "hsl(var(--cs-rep-text))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -62,6 +80,13 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      boxShadow: {
+        soft: "var(--shadow-soft)",
+        medium: "var(--shadow-medium)",
+      },
+      transitionProperty: {
+        smooth: "var(--transition-smooth)",
       },
       keyframes: {
         "accordion-down": {
