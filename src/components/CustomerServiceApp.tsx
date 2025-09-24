@@ -28,6 +28,12 @@ interface TranscriptMessage {
   timestamp: string;
 }
 
+interface ChatMessage {
+  type: "user" | "ai";
+  message: string;
+  timestamp: string;
+}
+
 interface CallSummary {
   customerName: string;
   rating: number;
@@ -44,6 +50,13 @@ export default function CustomerServiceApp() {
   const [showCallSummary, setShowCallSummary] = useState(false);
   const [callDuration, setCallDuration] = useState("2:35");
   const [transcriptOpen, setTranscriptOpen] = useState(true);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
+    {
+      type: "ai",
+      message: "I'm ready to help with Margaret's call. I have access to her profile, device history, and previous interactions.",
+      timestamp: "10:22:45"
+    }
+  ]);
 
   const transcript: TranscriptMessage[] = [
     {
@@ -97,7 +110,22 @@ export default function CustomerServiceApp() {
 
   const handleSendMessage = () => {
     if (inputMessage.trim()) {
-      // Handle message sending logic here
+      // Add user message
+      setChatMessages(prev => [...prev, {
+        type: "user" as const,
+        message: inputMessage,
+        timestamp: new Date().toLocaleTimeString()
+      }]);
+      
+      // Simulate AI response (replace with actual API call)
+      setTimeout(() => {
+        setChatMessages(prev => [...prev, {
+          type: "ai" as const,
+          message: "Based on Margaret's profile, I can see she has had 2 previous calls about device connectivity. Her Horizon 71X hearing aids were purchased on January 15th, 2024. Would you like me to review the troubleshooting steps from her previous calls?",
+          timestamp: new Date().toLocaleTimeString()
+        }]);
+      }, 1000);
+      
       setInputMessage("");
     }
   };
@@ -158,21 +186,44 @@ export default function CustomerServiceApp() {
               </h3>
             </div>
 
-            {/* AI Assistant */}
+            {/* AI Chat Messages */}
             <Card className="mb-6 shadow-soft">
-              <CardContent className="p-6">
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
-                    <span className="text-primary-foreground font-semibold text-sm">AI</span>
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-lg mb-2">AI Assistant Ready</h3>
-                    <p className="text-muted-foreground">
-                      Ask me anything about Margaret's profile, call history, or device information to help
-                      with this support call.
-                    </p>
+              <CardContent className="p-0">
+                <div className="p-4 border-b bg-muted/30">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                      <span className="text-primary-foreground font-semibold text-xs">AI</span>
+                    </div>
+                    <h3 className="font-semibold">Customer Assistant</h3>
                   </div>
                 </div>
+                <ScrollArea className="h-64">
+                  <div className="p-4 space-y-4">
+                    {chatMessages.map((msg, index) => (
+                      <div key={index} className={`flex gap-3 ${msg.type === 'user' ? 'flex-row-reverse' : ''}`}>
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
+                          msg.type === 'ai' ? 'bg-primary' : 'bg-cs-customer-info'
+                        }`}>
+                          <span className={`font-semibold text-xs ${
+                            msg.type === 'ai' ? 'text-primary-foreground' : 'text-cs-customer-info-foreground'
+                          }`}>
+                            {msg.type === 'ai' ? 'AI' : 'CS'}
+                          </span>
+                        </div>
+                        <div className={`flex-1 ${msg.type === 'user' ? 'text-right' : ''}`}>
+                          <div className={`inline-block p-3 rounded-lg max-w-[80%] ${
+                            msg.type === 'ai' 
+                              ? 'bg-muted text-foreground' 
+                              : 'bg-primary text-primary-foreground'
+                          }`}>
+                            <p className="text-sm leading-relaxed">{msg.message}</p>
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-1">{msg.timestamp}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </ScrollArea>
               </CardContent>
             </Card>
 
