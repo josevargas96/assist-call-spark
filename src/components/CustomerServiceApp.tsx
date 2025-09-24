@@ -138,6 +138,48 @@ export default function CustomerServiceApp() {
     ]
   };
 
+  const getResponseForQuestion = (question: string): string => {
+    switch (question) {
+      case "Previous Issues":
+        return "Margaret has had 3 previous calls in the last 6 months. Main issues: 1) Bluetooth connectivity (resolved), 2) Volume adjustment problems (resolved), 3) Battery life concerns (ongoing). Would you like details on any specific issue?";
+      
+      case "Device History":
+        return "Margaret's device history: Horizon 71X hearing aids purchased January 15th, 2024. Previously had Horizon 65 models (2019-2024). No hardware replacements. Last firmware update: March 2024 (v2.1.4). Device is still under warranty until January 2026.";
+      
+      case "Last Call Notes":
+        return "Last call (3 days ago): Duration 4:23 minutes. Issue: Intermittent audio cutting out during phone calls. Resolution: Updated iPhone accessibility settings and reset hearing aid connection. Customer satisfaction: 4/5 stars. Follow-up scheduled if issues persist.";
+      
+      case "Warranty Status":
+        return "Warranty Status: ACTIVE. Horizon 71X purchased January 15th, 2024. 2-year comprehensive warranty expires January 15th, 2026. Covers: hardware defects, battery replacement, accidental damage (2 incidents remaining). Premium support included.";
+      
+      case "Pairing Steps":
+        return "iPhone pairing steps for Horizon 71X: 1) Settings > Accessibility > Hearing Devices 2) Turn hearing aids off/on 3) Hold volume buttons for 3 seconds until blue light flashes 4) Select 'Margaret's Horizon 71X' when it appears 5) Tap 'Pair' for both left and right devices. Troubleshooting: Ensure iOS 15.0+ and Bluetooth enabled.";
+      
+      default:
+        return "I can help you with information about Margaret's profile, device history, previous calls, warranty status, or troubleshooting steps. What would you like to know more about?";
+    }
+  };
+
+  const handleQuickQuestionClick = (question: string) => {
+    // Add user message
+    setChatMessages(prev => [...prev, {
+      type: "user" as const,
+      message: question,
+      timestamp: new Date().toLocaleTimeString()
+    }]);
+    
+    // Simulate AI response
+    setTimeout(() => {
+      setChatMessages(prev => [...prev, {
+        type: "ai" as const,
+        message: getResponseForQuestion(question),
+        timestamp: new Date().toLocaleTimeString()
+      }]);
+    }, 1000);
+    
+    setInputMessage(""); // Clear the input after sending
+  };
+
   const handleSendMessage = () => {
     if (inputMessage.trim()) {
       // Add user message
@@ -314,7 +356,13 @@ export default function CustomerServiceApp() {
               <h3 className="text-xs font-medium mb-2 text-muted-foreground">Quick Questions:</h3>
               <div className="flex flex-wrap gap-1.5">
                 {quickQuestions.map((question) => (
-                  <Button key={question} variant="outline" size="sm" className="text-primary text-xs h-7 px-2">
+                  <Button 
+                    key={question} 
+                    variant="outline" 
+                    size="sm" 
+                    className="text-primary text-xs h-7 px-2 hover:bg-primary/10 transition-colors"
+                    onClick={() => handleQuickQuestionClick(question)}
+                  >
                     {question}
                   </Button>
                 ))}
