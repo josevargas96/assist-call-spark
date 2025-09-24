@@ -153,9 +153,9 @@ export default function CustomerServiceApp() {
         </div>
       </header>
 
-      <div className="flex flex-1 flex-col">
-        {/* Main Content */}
-        <main className="flex-1 flex flex-col">
+      <div className="flex flex-1">
+        {/* Left Column - Main Content */}
+        <div className="flex-1 flex flex-col">
           {/* Customer Info Bar */}
           <div className="bg-cs-customer-info text-cs-customer-info-foreground px-6 py-4 flex items-center justify-between">
             <div className="flex items-center gap-6">
@@ -266,34 +266,35 @@ export default function CustomerServiceApp() {
               </Button>
             </div>
           </div>
-        </main>
+        </div>
 
-        {/* Transcript Accordion */}
-        <div className="border-t bg-cs-transcript">
+        {/* Right Column - Transcript */}
+        <div className="w-96 border-l bg-cs-transcript flex flex-col">
           <Accordion 
             type="single" 
             collapsible 
             value={transcriptOpen ? "transcript" : ""}
             onValueChange={(value) => setTranscriptOpen(value === "transcript")}
+            className="flex-1 flex flex-col"
           >
-            <AccordionItem value="transcript" className="border-0">
+            <AccordionItem value="transcript" className="border-0 flex-1 flex flex-col">
               <AccordionTrigger className="px-6 py-4 bg-cs-transcript text-cs-transcript-foreground hover:no-underline">
                 <div className="flex items-center justify-between w-full">
                   <div className="flex items-center gap-2">
                     <h3 className="font-semibold">Live Call Transcript</h3>
-                    <div className="flex items-center gap-2 ml-4">
+                    <div className="flex items-center gap-2 ml-2">
                       <div className="w-2 h-2 bg-cs-active rounded-full animate-pulse"></div>
-                      <span className="text-xs text-cs-active">Live transcription active...</span>
+                      <span className="text-xs text-cs-active">Live</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 text-sm text-cs-transcript-foreground/70">
                     <Clock className="h-4 w-4" />
-                    Duration: {callDuration}
+                    {callDuration}
                   </div>
                 </div>
               </AccordionTrigger>
-              <AccordionContent className="px-0 pb-0">
-                <ScrollArea className="h-64 px-6 pb-4">
+              <AccordionContent className="px-0 pb-0 flex-1">
+                <ScrollArea className="h-[calc(100vh-200px)] px-6 pb-4">
                   <div className="space-y-4">
                     {transcript.map((msg, index) => (
                       <div key={index} className="space-y-1">
